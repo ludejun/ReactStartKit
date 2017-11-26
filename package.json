@@ -14,7 +14,7 @@
     "react",
     "redux"
   ],
-  "author": "navy",
+  "author": "ludejun",
   "license": "ISC",
   "dependencies": {
     "autoprefixer": "^6.5.4",
