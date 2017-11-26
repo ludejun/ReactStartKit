@@ -1,0 +1,74 @@
+{
+  "name": "react-start-kit",
+  "version": "1.0.0",
+  "description": "react redux redux-saga webpack start kit",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "NODE_ENV=DEV node app",
+    "dev": "node ./webpack/dev",
+    "build": "webpack --config  ./webpack/prod.js",
+    "eslint": "eslint src"
+  },
+  "keywords": [
+    "react",
+    "redux"
+  ],
+  "author": "navy",
+  "license": "ISC",
+  "dependencies": {
+    "autoprefixer": "^6.5.4",
+    "babel-polyfill": "^6.16.0",
+    "classnames": "^2.2.5",
+    "compression": "^1.6.2",
+    "debug": "^2.5.2",
+    "express": "^4.14.0",
+    "moment": "^2.17.1",
+    "morgan": "^1.7.0",
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2",
+    "react-redux": "^4.4.5",
+    "react-router": "^3.0.0",
+    "redux": "^3.6.0",
+    "redux-logger": "^2.7.0",
+    "redux-saga": "^0.12.0",
+    "redux-thunk": "^2.1.0",
+    "superagent": "^2.3.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-core": "^6.18.0",
+    "babel-eslint": "^7.1.1",
+    "babel-loader": "^6.2.7",
+    "babel-plugin-import": "^1.0.1",
+    "babel-preset-es2015": "^6.18.0",
+    "babel-preset-react": "^6.16.0",
+    "babel-preset-react-hmre": "^1.1.1",
+    "babel-preset-stage-0": "^6.16.0",
+    "css-loader": "^0.25.0",
+    "eslint": "^3.12.2",
+    "eslint-config-airbnb": "^13.0.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^2.2.3",
+    "eslint-plugin-react": "^6.8.0",
+    "extract-text-webpack-plugin": "^1.0.1",
+    "less": "^2.7.1",
+    "less-loader": "^2.2.3",
+    "postcss-loader": "^1.0.0",
+    "postcss-pxtorem": "^3.3.1",
+    "react-hot-loader": "^1.3.1",
+    "style-loader": "^0.13.1",
+    "stylelint": "^7.6.0",
+    "stylelint-config-standard": "^15.0.0",
+    "webpack": "^1.14.0",
+    "webpack-dev-middleware": "^1.8.4",
+    "webpack-dev-server": "^1.16.2",
+    "webpack-hot-middleware": "^2.13.2"
+  },
+  "stylelint": {
+    "extends": "stylelint-config-standard",
+    "rules": {
+      "string-quotes": "single"
+    }
+  }
+}
