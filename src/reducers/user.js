@@ -1,10 +1,11 @@
-import {types} from '../actions/home';
+import {types} from '../actions/user';
 
 const initialState = {
-  list: []
+  loading: false,
+  name: null
 };
 
-export default function home(state = initialState, action = {}) {
+export default function user(state = initialState, action = {}) {
   switch (action.type) {
 
     case 'RESET_STATE':
@@ -12,19 +13,20 @@ export default function home(state = initialState, action = {}) {
         ...initialState
       };
 
-    case types.GET_HOME_INFO:
+    case types.GET_LOGIN_INFO:
       return {
         ...state,
         loading: true
       };
 
-    case types.GET_HOME_INFO_SUCCESS:
+    case types.GET_LOGIN_INFO_SUCCESS:
       return {
         ...state,
+        name: action.loginInfo.name,
         loading: false
       };
 
-    case types.GET_HOME_INFO_FAIL:
+    case types.GET_LOGIN_INFO_FAIL:
       return {
         ...state,
         loading: false

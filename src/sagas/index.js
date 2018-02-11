@@ -1,8 +1,8 @@
 import {fork} from 'redux-saga/effects';
-import * as home from './home';
+import * as user from './user';
 
 export default function* rootSaga() {
   yield [
-    fork(home.watchGetHomeInfo)
+    fork(user.watchGetLoginInfo)
   ];
 }

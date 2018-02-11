@@ -1,5 +1,5 @@
 const configs = {
-  name: 'Hello World!'
+  name: 'ReactStartKit'
 };
 
 export default configs;

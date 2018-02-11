@@ -1,7 +1,7 @@
 # ReactStartKit
 
-React + Redux + Redux-Sagas + Webpack
-
+React16 + Redux + Redux-Sagas + Webpack3 + React-Router4
++ webpack dev server + autoprefixer
 
 
 ## Build Setup
@@ -10,9 +10,8 @@ React + Redux + Redux-Sagas + Webpack
 # install dependencies
 npm install
 
-# serve with hot reload at localhost:8080
+# serve with hot reload at localhost:3001
 npm start
-npm run dev
 
 # build for production with minification
 npm run build
@@ -22,6 +21,6 @@ npm run build --report
 ```
 
 1. 安装 ```npm install```
-2. 启动 Webpack hot loader ```npm run dev```
-3. 启动服务 ```npm start```
-4. 发布 ```npm run build```
+2. 启动服务 ```npm start```
+3. 发布 ```npm run build```
+4. 启动 Webpack hot loader ```npm run dev```

@@ -1,68 +1,139 @@
+const path = require('path');
 const webpack = require('webpack');
-const pxtorem = require('postcss-pxtorem');
 const autoprefixer = require('autoprefixer');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 const loaders = [
   {
     test: /\.jsx?$/,
     exclude: /node_modules/,
-    loader: 'babel',
-    query: {
-      "presets": ["react", "es2015", "stage-0"]
-    }
+    use: [
+      "babel-loader",
+    ],
   }, {
     test: /\.json$/,
     exclude: /node_modules/,
-    loaders: ['json-loader']
+    use: ['json-loader']
   },
   {
     test: /\.css$/,
-    loader: ExtractTextPlugin.extract('style', 'css!postcss')
+    use: ExtractTextPlugin.extract({
+      fallback: 'style-loader',
+      // use: ['css-loader', 'postcss-loader']
+      use: [
+        {
+          loader: 'css-loader',
+          options: {
+            minimize: true,
+            sourceMap: false
+          },
+        },
+        {
+          loader: 'postcss-loader',
+        },
+      ],
+    })
   },
   {
-    test: /\.less/,
-    loader: ExtractTextPlugin.extract('style', 'css!postcss!less')
+    test: /\.less$/,
+    use: ExtractTextPlugin.extract({
+      fallback: 'style-loader',
+      // use: ['css-loader', 'postcss-loader', 'less-loader']
+      use: [
+        {
+          loader: 'css-loader',
+          options: {
+            minimize: true,
+            sourceMap: false
+          },
+        },
+        {
+          loader: 'postcss-loader',
+        },
+        {
+          loader: 'less-loader',
+          options: {
+            sourceMap: false
+          }
+        }
+      ],
+    })
+  },
+  {
+    test: /\.(png|svg|jpg|gif)$/,
+    use: [{
+      loader: 'file-loader',
+      options: {
+        name: '/static/[name]-[hash].[ext]',
+      }
+    }]
+  },
+  {
+    test: /\.(woff|woff2|eot|ttf|otf)$/,
+    use: [{
+      loader: 'file-loader',
+      options: {
+        name: '/static/[name]-[hash].[ext]',
+      }
+    }]
   }
 ];
 
-
 const config = {
-
   resolve: {
-    extensions: ['', '.web.js', '.js', '.jsx']
+    extensions: ['.web.js', '.js', '.jsx']
   },
   entry: './src/client.js',
-
   output: {
-    path: './dist/js',
-    publicPath: '/dist/js/',
+    path: path.join(__dirname, '../dist'),
+    // publicPath: '/dist/',
     filename: '[name].min.js',
-    chunkFilename: '[name].min.js'
+    // chunkFilename: '[name].min.js'
   },
 
   module: {
     loaders: loaders
   },
 
-  postcss: [pxtorem({
-    rootValue: 100,
-    propWhiteList: []
-  }), autoprefixer()],
   plugins: [
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: JSON.stringify('production')
       }
     }),
-    new webpack.optimize.OccurenceOrderPlugin(),
+    new CleanWebpackPlugin(['dist'], { root: path.join(__dirname, '..') }),
+    new HtmlWebpackPlugin({
+      title: 'ReactStartKit',
+      inject: true,
+      minify: {
+        removeComments: true,
+        collapseWhitespace: true,
+        removeRedundantAttributes: true,
+        useShortDoctype: true,
+        removeEmptyAttributes: true,
+        removeStyleLinkTypeAttributes: true,
+        keepClosingSlash: true,
+        minifyJS: true,
+        minifyCSS: true,
+        minifyURLs: true,
+        collapseInlineTagWhitespace: true
+      },
+      template: path.join(__dirname, '../public/index.html'),
+      hash: true,
+      alwaysWriteToDisk: true
+    }),
+    // new webpack.optimize.OccurenceOrderPlugin(),
     new ExtractTextPlugin('[name].min.css'),
     new webpack.optimize.UglifyJsPlugin({
       compressor: {
         warnings: false,
         screw_ie8: true
       }
-    })
+    }),
+    new webpack.optimize.AggressiveMergingPlugin()
   ]
 };
+
 module.exports = config;

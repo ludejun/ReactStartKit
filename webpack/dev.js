@@ -1,11 +1,12 @@
 const path = require('path');
 const webpack = require('webpack');
-const pxtorem = require('postcss-pxtorem');
+// const middleware = require('webpack-dev-middleware');
 const autoprefixer = require('autoprefixer');
 const webpackDevServer = require('webpack-dev-server');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const env = {
-  hot_server_host: '127.0.0.1',
+  hot_server_host: 'localhost',
   hot_server_port: 5591
 };
 
@@ -13,44 +14,53 @@ const loaders = [
   {
     test: /\.jsx?$/,
     exclude: /node_modules/,
-    loader: 'babel',
-    query: {
-      "presets": ["react", "es2015", "stage-0", "react-hmre"]
-    }
+    use: [
+      "react-hot-loader/webpack",
+      "babel-loader",
+    ],
   }, {
     test: /\.json$/,
     exclude: /node_modules/,
-    loader: 'json'
+    use: ['json-loader']
   },
   {
     test: /\.css$/,
-    loader: 'style!css!postcss'
+    exclude: /node_modules/,
+    use: ['style-loader', 'css-loader', 'postcss-loader']
   },
   {
     test: /\.less$/,
-    loader: 'style!css!postcss!less'
+    exclude: /node_modules/,
+    use: ['style-loader', 'css-loader', 'postcss-loader', 'less-loader']
+  },
+  {
+    test: /\.(png|svg|jpg|gif)$/,
+    use: ['file-loader']
+  },
+  {
+    test: /\.(woff|woff2|eot|ttf|otf)$/,
+    use: ['file-loader']
   }
 ];
 
 
 const config = {
-
   resolve: {
-    extensions: ['', '.web.js', '.js', '.jsx']
+    extensions: ['.web.js', '.js', '.jsx']
   },
 
   entry: [
-    'webpack-dev-server/client?http://' + env.hot_server_host + ':' + env.hot_server_port,
-    'webpack/hot/dev-server',
+    'babel-polyfill',
+    'react-hot-loader/patch',
+    `webpack-dev-server/client?http://${env.hot_server_host}:${env.hot_server_port}`,
+    'webpack/hot/only-dev-server',
     './src/client.js'
   ],
   output: {
-    path: path.join(__dirname, '/public/build/js'),
+    path: path.join(__dirname, '../dist'),
     filename: '[name].js',
     publicPath: 'http://' + env.hot_server_host + ':' + env.hot_server_port + '/'
   },
-
-  devtool: "eval",
 
   // What information should be printed to the console
   stats: {
@@ -64,9 +74,17 @@ const config = {
         NODE_ENV: JSON.stringify('development')
       }
     }),
-    new webpack.optimize.OccurenceOrderPlugin(),
+    new HtmlWebpackPlugin({
+      title: 'ReactStartKit',
+      inject: 'body',
+      minify: false,
+      template: path.join(__dirname, '../public/index.html'),
+      alwaysWriteToDisk: true
+    }),
+    // new webpack.optimize.OccurenceOrderPlugin(),
+    new webpack.NamedModulesPlugin(),
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoErrorsPlugin()
+    new webpack.NoEmitOnErrorsPlugin()
   ],
 
   // Options affecting the normal modules
@@ -74,20 +92,22 @@ const config = {
     loaders: loaders
   },
 
-  // The list of plugins for PostCSS
-  // https://github.com/postcss/postcss
-  postcss: [
-    pxtorem({
-      rootValue: 100,
-      propWhiteList: []
-    }),
-    autoprefixer()
-  ]
+  devtool: 'inline-source-map'
 };
 
-const compiler = webpack(config);
-const server = new webpackDevServer(compiler, {
+// module.exports = config;
+
+const options = {
+  contentBase: path.join(__dirname, '../dist'),
+  compress: true,
+  port: env.hot_server_port,
   inline: true,
-  hot: true
+  hot: true,
+  // publicPath: 'http://' + env.hot_server_host + ':' + env.hot_server_port + '/'
+};
+// webpackDevServer.addDevServerEntrypoints(config, options);
+const compiler = webpack(config);
+const server = new webpackDevServer(compiler, options);
+server.listen(env.hot_server_port, env.hot_server_host, () => {
+  console.log('dev server listening on port ' + env.hot_server_port);
 });
-server.listen(env.hot_server_port);
