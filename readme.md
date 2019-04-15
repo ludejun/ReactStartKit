@@ -26,6 +26,7 @@ npm run build --report
 4. 启动 Webpack hot loader ```npm run dev```
 
 ChangeLog：
-升级到webpack4
+升级到webpack4，babel7
 重新安装依赖
-更偏工程化，
+加上包分析工具，去掉moment包，自写moment函数
+更偏工程化，升级eslint、prettier，适合大型项目的脚手架
