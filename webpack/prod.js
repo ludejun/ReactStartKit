@@ -1,9 +1,11 @@
+/* eslint-disable */
 const path = require('path');
 const webpack = require('webpack');
-const autoprefixer = require('autoprefixer');
+// const autoprefixer = require('autoprefixer');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const loaders = [
   {
@@ -85,17 +87,24 @@ const config = {
   resolve: {
     extensions: ['.web.js', '.js', '.jsx']
   },
-  entry: './src/client.js',
+  entry: {
+    main: './src/client.js',
+    // vendor: ['react', 'react-dom']
+  },
   output: {
-    path: path.join(__dirname, '../dist'),
-    // publicPath: '/dist/',
-    filename: '[name].min.js',
-    // chunkFilename: '[name].min.js'
+    path: path.join(__dirname, '../release'),
+    filename: '[name].[chunkhash].js',
+    // 如使用CDN
+    // publicPath: "http://cdn.example.com/assets/[hash]/"
+    // 如有使用import()动态加载的代码打包
+    chunkFilename: '[name].bundle.js',
   },
 
   module: {
-    loaders: loaders
+    rules: loaders
   },
+
+  mode: 'production',
 
   plugins: [
     new webpack.DefinePlugin({
@@ -103,7 +112,7 @@ const config = {
         NODE_ENV: JSON.stringify('production')
       }
     }),
-    new CleanWebpackPlugin(['dist'], { root: path.join(__dirname, '..') }),
+    new CleanWebpackPlugin(['release'], { root: path.join(__dirname, '..') }),
     new HtmlWebpackPlugin({
       title: 'ReactStartKit',
       inject: true,
@@ -126,14 +135,52 @@ const config = {
     }),
     // new webpack.optimize.OccurenceOrderPlugin(),
     new ExtractTextPlugin('[name].min.css'),
-    new webpack.optimize.UglifyJsPlugin({
-      compressor: {
-        warnings: false,
-        screw_ie8: true
+    // new webpack.optimize.UglifyJsPlugin({
+    //   compressor: {
+    //     warnings: false,
+    //     screw_ie8: true,
+    //   },
+    // }),
+    new webpack.optimize.AggressiveMergingPlugin(),
+    new BundleAnalyzerPlugin({analyzerPort: 5593})
+  ],
+
+  // // 防止将某个模块打包到bundle中，如从CDN引入react而不是将它打包
+  // externals: {
+  //   react: 'react',
+  // },
+
+  // 当包体积过大时(超250kb)，将展示一条错误(警告)
+  performance: {
+    maxAssetSize: 1000000,
+    hints: 'warning',
+  },
+
+  // 类似CommonsChunkPlugin拆分公共代码
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+      minSize: 30000,
+      maxSize: 0,
+      minChunks: 1,
+      maxAsyncRequests: 5,
+      maxInitialRequests: 3,
+      automaticNameDelimiter: '~',
+      name: true,
+      cacheGroups: {
+        vendors: {
+          test: /[\\/]node_modules[\\/]/,
+          priority: -10,
+          // filename: '[name].bundle.js'
+        },
+        default: {
+          minChunks: 2,
+          priority: -20,
+          reuseExistingChunk: true
+        }
       }
-    }),
-    new webpack.optimize.AggressiveMergingPlugin()
-  ]
+    }
+  }
 };
 
 module.exports = config;

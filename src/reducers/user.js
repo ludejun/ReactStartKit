@@ -1,39 +1,37 @@
-import {types} from '../actions/user';
+import { types } from '../actions/user';
 
 const initialState = {
   loading: false,
-  name: null
+  name: null,
 };
 
 export default function user(state = initialState, action = {}) {
   switch (action.type) {
-
     case 'RESET_STATE':
       return {
-        ...initialState
+        ...initialState,
       };
 
     case types.GET_LOGIN_INFO:
       return {
         ...state,
-        loading: true
+        loading: true,
       };
 
     case types.GET_LOGIN_INFO_SUCCESS:
       return {
         ...state,
         name: action.loginInfo.name,
-        loading: false
+        loading: false,
       };
 
     case types.GET_LOGIN_INFO_FAIL:
       return {
         ...state,
-        loading: false
+        loading: false,
       };
 
     default:
       return state;
   }
 }
-

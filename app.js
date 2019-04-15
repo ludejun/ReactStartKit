@@ -1,3 +1,4 @@
+// 部署网站使用的http服务器，依赖需要单独安装
 const express = require('express');
 const compression = require('compression');
 const path = require('path');

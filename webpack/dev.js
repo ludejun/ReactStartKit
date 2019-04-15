@@ -1,9 +1,12 @@
+/* eslint-disable */
 const path = require('path');
 const webpack = require('webpack');
 // const middleware = require('webpack-dev-middleware');
-const autoprefixer = require('autoprefixer');
+// const autoprefixer = require('autoprefixer');
 const webpackDevServer = require('webpack-dev-server');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const env = {
   hot_server_host: 'localhost',
@@ -50,7 +53,7 @@ const config = {
   },
 
   entry: [
-    'babel-polyfill',
+    '@babel/polyfill',
     'react-hot-loader/patch',
     `webpack-dev-server/client?http://${env.hot_server_host}:${env.hot_server_port}`,
     'webpack/hot/only-dev-server',
@@ -58,8 +61,12 @@ const config = {
   ],
   output: {
     path: path.join(__dirname, '../dist'),
-    filename: '[name].js',
-    publicPath: 'http://' + env.hot_server_host + ':' + env.hot_server_port + '/'
+    // 如果配置多个entry入口，或者使用CommonsChunkPlugin这样的插件，应使用[name]占位符
+    // 为了防止静态资源被缓存，将打包输出加入 文件内容hash（chunkhash）的标示
+    filename: '[name].[hash].js',
+    // 如有使用import()动态加载的代码打包
+    chunkFilename: '[name].bundle.js',
+    // publicPath: 'http://' + env.hot_server_host + ':' + env.hot_server_port + '/'
   },
 
   // What information should be printed to the console
@@ -74,6 +81,7 @@ const config = {
         NODE_ENV: JSON.stringify('development')
       }
     }),
+    new CleanWebpackPlugin(['dist'], { root: path.join(__dirname, '..') }),
     new HtmlWebpackPlugin({
       title: 'ReactStartKit',
       inject: 'body',
@@ -84,15 +92,30 @@ const config = {
     // new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.NamedModulesPlugin(),
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoEmitOnErrorsPlugin()
+    new webpack.NoEmitOnErrorsPlugin(),
+    new BundleAnalyzerPlugin({analyzerPort: 5592})
   ],
 
   // Options affecting the normal modules
   module: {
-    loaders: loaders
+    rules: loaders
   },
 
-  devtool: 'inline-source-map'
+  // 可以在CLI参数中传递
+  mode: 'development',
+  devtool: 'inline-source-map',
+  // devServer: {
+  //   contentBase: path.join(__dirname, 'dist'),
+  //   compress: true,
+  //   port: 5591,
+  //   hot: true,
+  //   open: true,
+  // }
+
+  // 防止将某个模块打包到bundle中，如从CDN引入react而不是将它打包
+  // externals: {
+  //   react: 'react',
+  // },
 };
 
 // module.exports = config;
@@ -103,6 +126,7 @@ const options = {
   port: env.hot_server_port,
   inline: true,
   hot: true,
+  open: true,
   // publicPath: 'http://' + env.hot_server_host + ':' + env.hot_server_port + '/'
 };
 // webpackDevServer.addDevServerEntrypoints(config, options);

@@ -1,6 +1,6 @@
 # ReactStartKit
 
-React16 + Redux + Redux-Sagas + Webpack3 + React-Router4
+React16 + Redux + Redux-Sagas + Webpack4 + React-Router4
 + webpack dev server + autoprefixer
 
 
@@ -24,3 +24,8 @@ npm run build --report
 2. 启动服务 ```npm start```
 3. 发布 ```npm run build```
 4. 启动 Webpack hot loader ```npm run dev```
+
+ChangeLog：
+升级到webpack4
+重新安装依赖
+更偏工程化，

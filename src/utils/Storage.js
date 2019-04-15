@@ -1,16 +1,17 @@
-import moment from 'moment';
+// import moment from 'moment';
+import Moment from './moment';
 import configs from '../configs';
 
 const baseStorage = window.Storage;
-const stringify = JSON.stringify;
-const parse = JSON.parse;
+const { stringify } = JSON;
+const { parse } = JSON;
 
 baseStorage.prototype.set = function (key, value, expired) {
   const wrapped = {
-    data: value
+    data: value,
   };
   if (expired) {
-    wrapped.expired = moment().add(expired, 'm').valueOf();
+    wrapped.expired = new Moment().add(expired, 'm');
   }
   this.setItem(`${this.namespace}_${key}`, stringify(wrapped));
 };
@@ -39,7 +40,7 @@ baseStorage.prototype.retrieve = function (key, expired, success, fail) {
   const data = this.get(key);
   const saveOpts = {
     key,
-    expired
+    expired,
   };
   if (data) {
     success(data, saveOpts); // true means isCache
@@ -52,9 +53,8 @@ baseStorage.prototype.retrieve = function (key, expired, success, fail) {
   }
 };
 
-
 baseStorage.prototype.isExpired = function (wrapped) {
-  const currentTime = moment().valueOf();
+  const currentTime = new Date().getTime();
 
   if (wrapped.expired) {
     if (currentTime > wrapped.expired) {
